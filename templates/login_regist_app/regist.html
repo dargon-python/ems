@@ -1,0 +1,210 @@
+{% extends 'login_regist_app/basehtml.html' %}
+
+{% block title %}
+    {% load static %}
+    <title>regist</title>
+{% endblock %}
+
+{% block js %}
+    <script>
+        var flag1 = false;
+        var flag2 = false;
+        var flag3 = false;
+        var flag4 = false;
+        function changeCode() {
+            url = "{% url 'login_regist_app:getcaptcha' %}?"+new Date().getTime();
+            img = document.getElementById("image_captcha");
+            img.src = url
+        }
+        $.ajaxSetup({
+            headers:{"X-CSRFToken":"{{ csrf_token }}"},
+        });
+        function regist() {
+            console.log(flag1,flag2,flag3,flag4);
+            if (flag1 && flag2 && flag3 && flag4) {
+                $.ajax({
+                type:'post',
+                url:"{% url 'login_regist_app:registlogic' %}",
+                data:$("#form1").serialize(),
+                success:function (msg) {
+                    if (msg === 'ok') {
+                        location.href = "{% url 'login_regist_app:login' %}";
+                    }else if (msg === 'error') {
+                        alert("注册失败");
+                    }
+
+                }
+            })
+            }else {
+                alert("请填写正确的注册信息")
+            }
+        }
+
+        function checkname() {
+            document.getElementById('img1').src ="{% static 'login_regist_app/img/wait.gif' %}";
+            $.ajax({
+                type:"post",
+                url:"{% url 'login_regist_app:checkname' %}",
+                data:"username="+document.getElementsByName('username')[0].value,
+                success:function (msg) {
+                    if (msg === 'ok') {
+                        flag1 = true;
+                        document.getElementById('img1').src ="{% static 'login_regist_app/img/right.jpg' %}";
+                    }else if (msg === 'error') {
+                        flag1 = false;
+                        document.getElementById('img1').src ="{% static 'login_regist_app/img/error.jpg' %}";
+                    }
+                }
+            })
+        }
+
+        function checkpwd1() {
+            upwd1 = document.getElementsByName('userpwd1')[0].value;
+            upwd2 = document.getElementsByName('userpwd2')[0].value;
+            if (upwd1) {
+                flag2 = true;
+                document.getElementById('img2').src = "{% static 'login_regist_app/img/right.jpg' %}";
+                if (upwd1 === upwd2) {
+                    flag2 = true;
+                    flag3 = true;
+                    document.getElementById('img3').src = "{% static 'login_regist_app/img/right.jpg' %}";
+                }else if (upwd2) {
+                    if (upwd1 !== upwd2) {
+                        flag3 = false;
+                        document.getElementById('img3').src = "{% static 'login_regist_app/img/error.jpg' %}";
+                    }
+                }else if (upwd2 === false) {
+                    if (upwd1 !== upwd2) {
+                        flag2 = false;
+                        flag3 = false;
+                        document.getElementById('img3').src = "{% static 'login_regist_app/img/error.jpg' %}";
+                        document.getElementById('img4').src = "{% static 'login_regist_app/img/error.jpg' %}";
+                    }
+                }
+            }
+        }
+
+        function checkpwd2() {
+            upwd1 = document.getElementsByName('userpwd1')[0].value;
+            upwd2 = document.getElementsByName('userpwd2')[0].value;
+            if (upwd1 === upwd2) {
+                flag2 = true;
+                flag3 = true;
+                document.getElementById('img3').src = "{% static 'login_regist_app/img/right.jpg' %}";
+            }else{
+                flag3 = false;
+                document.getElementById('img3').src = "{% static 'login_regist_app/img/error.jpg' %}";
+            }
+        }
+
+        function checkcapt() {
+            document.getElementById('img1').src ="{% static 'login_regist_app/img/wait.gif' %}";
+            $.ajax({
+                type:"post",
+                url:"{% url 'login_regist_app:checkcapt' %}",
+                data:"captcha="+document.getElementsByName('captcha')[0].value,
+                success:function (msg) {
+                    if (msg === 'ok') {
+                        flag4 = true;
+                        document.getElementById('img4').src = "{% static 'login_regist_app/img/right.jpg' %}";
+                    }else if (msg === 'error') {
+                        flag4 = false;
+                        document.getElementById('img4').src = "{% static 'login_regist_app/img/error.jpg' %}";
+                    }
+
+                }
+            })
+        }
+
+    </script>
+{% endblock %}
+
+
+{% block content %}
+    <div id="wrap">
+    <div id="top_content">
+            <div id="header">
+                <div id="rightheader">
+                    <p>
+                        2019/7/1
+                        <br />
+                    </p>
+                </div>
+                <div id="topheader">
+                    <h1 id="title">
+                        <a href="#">main</a>
+                    </h1>
+                </div>
+                <div id="navigation">
+                </div>
+            </div>
+        <div id="content">
+            <p id="whereami">
+            </p>
+            <h1>
+                注册
+            </h1>
+            <form action="" method="post" id="form1">
+                {% csrf_token %}
+                <table cellpadding="0" cellspacing="0" border="0"
+                    class="form_table">
+                    <tr>
+                        <td valign="middle" align="right">
+                            username:
+                        </td>
+                        <td valign="middle" align="left">
+                            <input type="text" class="inputgri" name="username" onblur="checkname();"/><img src="" id="img1" width="20px">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td valign="middle" align="right">
+                            password:
+                        </td>
+                        <td valign="middle" align="left">
+                            <input type="password" class="inputgri" name="userpwd1" onblur="checkpwd1();"/><img src="" id="img2" width="20px">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td valign="middle" align="right">
+                            password2:
+                        </td>
+                        <td valign="middle" align="left">
+                            <input type="password" class="inputgri" name="userpwd2" onblur="checkpwd2();"/><img src="" id="img3" width="20px">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td valign="middle" align="right">
+                            gender:
+                        </td>
+                        <td valign="middle" align="left">
+                            male
+                            <input type="radio" class="inputgri" name="gender" value="1" checked="checked"/>
+                            female
+                            <input type="radio" class="inputgri" name="gender" value="0"/>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td valign="middle" align="right" height="3px">
+                            验证码:
+                        </td>
+                        <td valign="middle" align="left">
+                            <input type="text" name="captcha" onblur="checkcapt();" size="10px"/> <img src="{% url 'login_regist_app:getcaptcha' %}" width="80px"  id="image_captcha"><a href="javascript:void(0)" onclick="changeCode()">看不清，换一张</a>
+                            <img src="" id="img4" width="20px"><br/>
+                        </td>
+                    </tr>
+                </table>
+                <p>
+                    <input type="button" class="button" value="Regist &raquo;" onclick="regist()"/>
+                </p>
+            </form>
+        </div>
+    </div>
+    <div id="footer">
+        <div id="footer_bg">
+        ABC@126.com
+        </div>
+    </div>
+</div>
+{% endblock %}
+

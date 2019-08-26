@@ -1,0 +1,107 @@
+{% extends 'login_regist_app/basehtml.html' %}
+
+{% block title %}
+    {% load static %}
+    <title>login</title>
+{% endblock %}
+
+{% block js %}
+    <script>
+        function login() {
+            $.ajax({
+                type:'post',
+                url:"{% url 'login_regist_app:loginlogic' %}",
+                data:$('#form1').serialize(),
+                success:function (msg) {
+                    if (msg === 'ok') {
+                        location.href = "{% url 'emsapp:emplist' %}"
+                    }else if (msg === 'error') {
+                        alert('用户名或密码错误');
+                        {#document.getElementsByName('username')[0].value.clear();#}
+                        {#document.getElementsByName('userpwd')[0].value.clear();#}
+
+                    }else if (msg === 'addurl') {
+                        location.href = "{% url 'emsapp:addemp' %}"
+                    }
+                }
+            })
+        }
+    </script>
+{% endblock %}
+
+
+{% block content %}
+    <div id="wrap">
+			<div id="top_content">
+					<div id="header">
+						<div id="rightheader">
+							<p>
+								2019/7/1
+								<br />
+							</p>
+						</div>
+						<div id="topheader">
+							<h1 id="title">
+								<a href="#">main</a>
+							</h1>
+						</div>
+						<div id="navigation">
+						</div>
+					</div>
+				<div id="content">
+					<p id="whereami">
+					</p>
+					<h1>
+						login
+					</h1>
+					<form action="" id="form1" method="post">
+                        {% csrf_token %}
+						<table cellpadding="0" cellspacing="0" border="0"
+							class="form_table">
+							<tr>
+								<td valign="middle" align="right">
+									username:
+								</td>
+								<td valign="middle" align="left">
+									<input type="text" class="inputgri" name="username" />
+								</td>
+                                <input type="hidden" name="addurl" value="{{ addurl }}">
+							</tr>
+							<tr>
+								<td valign="middle" align="right">
+									password:
+								</td>
+								<td valign="middle" align="left">
+									<input type="password" class="inputgri" name="userpwd" />
+								</td>
+							</tr>
+{#                            <tr>#}
+{#								<td valign="middle" align="right">#}
+{#									验证码:#}
+{#								</td>#}
+{#								<td valign="middle" align="left">#}
+{#									<input type="text" name="captcha"> <img src="{% url 'login_regist_app:getcaptcha' %}" width="80px"  id="image_captcha"><a href="javascript:void(0)" onclick="changeCode()">看不清，换一张</a><br/>#}
+{#								</td>#}
+{#							</tr>#}
+                            <tr>
+                                <td><input type="checkbox" name="remember" value="1">记住我7天</td>
+                            </tr>
+                            <tr>
+                                <td><input type="button" class="button" value="Login &raquo;" onclick="login();"/></td>
+                                <td><input type="button" class="button" value="Regist &raquo;" onclick="location='{% url 'login_regist_app:regist' %}'" /></td>
+                            </tr>
+						</table>
+					</form>
+				</div>
+			</div>
+			<div id="footer">
+				<div id="footer_bg">
+					ABC@126.com
+				</div>
+			</div>
+		</div>
+{% endblock %}
+
+
+
+

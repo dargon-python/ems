@@ -1,0 +1,84 @@
+{% extends 'emsapp/basehtml.html' %}
+
+{% block title %}
+    {% load static %}
+    <title>Emplist</title>
+{% endblock %}
+
+{% block js %}
+    <style>
+        a {
+            text-decoration: none;
+        }
+    </style>
+{% endblock %}
+
+
+{% block content %}
+    <div id="wrap">
+    <div id="top_content">
+        <div id="header">
+            <div id="rightheader">
+                <p>
+                    2019/7/1
+                    <br/>
+                </p>
+            </div>
+            <div id="topheader">
+                <h1 id="title">
+                    <a href="#">main</a>
+                </h1>
+            </div>
+            <div id="navigation">
+            </div>
+        </div>
+        <div id="content">
+            <p id="whereami">
+            </p>
+            <h1>
+                Welcome!
+            </h1>
+            <table class="table" id="table01">
+                <tr class="table_header">
+                    <td>ID</td>
+                    <td>Name</td>
+                    <td>Salary</td>
+                    <td>Age</td>
+                    <td>Headpic</td>
+                    <td>Operation</td>
+                </tr>
+                {% for p in page.object_list %}
+                    <tr class="row1">
+                        <td id="t1">{{ p.id }}</td>
+                        <td id="t2">{{ p.name }}</td>
+                        <td id="t3">{{ p.salary }}</td>
+                        <td id="t4">{{ p.age }}</td>
+                        <td id="t5"><img src="{% static p.headpic.url %}" height="50px"></td>
+                        <td><a name="a" href="{% url 'emsapp:deleteemp' %}?id={{ p.id }}&pgnumber={{ page.number }}">delete
+                            emp</a>&nbsp;<a href="{% url 'emsapp:updataemp' %}?id={{ p.id }}&pgnumber={{ page.number }}">update
+                            emp</a></td>
+                    </tr>
+                {% endfor %}
+            </table>
+            {% if page.has_previous %}
+                <a href="{% url 'emsapp:emplist' %}?pgnumber={{ page.previous_page_number }}">上一页</a>
+            {% endif %}
+            {% for p in page.paginator.page_range %}
+                <a href="{% url 'emsapp:emplist' %}?pgnumber={{ p }}">{{ p }}</a>
+            {% endfor %}
+            {% if page.has_next %}
+                <a href="{% url 'emsapp:emplist' %}?pgnumber={{ page.next_page_number }}">下一页</a>
+            {% endif %}
+            <p>
+                <input type="button" class="button" value="Add Employee" onclick="location='{% url 'emsapp:addemp' %}'"/>
+            </p>
+        </div>
+    </div>
+    <div id="footer">
+        <div id="footer_bg">
+            ABC@126.com
+        </div>
+    </div>
+</div>
+{% endblock %}
+
